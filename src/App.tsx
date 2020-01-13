@@ -23,11 +23,7 @@ const App: React.FC = () => {
   const path = useRef(null);
   let d = generateD();
   let animation: null | AnimationReturnType = null;
-  const createAnimation = (
-    duration: number,
-    easing: any,
-    onComplete: any
-  ) => () => {
+  const createAnimation = (duration: number, easing: any) => () => {
     const nextD = generateD();
     const pathInterpolator = interpolatePath(d, nextD);
     if (animation) {
@@ -39,17 +35,13 @@ const App: React.FC = () => {
       onFrame: (n: number) => {
         d = pathInterpolator(n);
         // @ts-ignore
-        path.current.setAttribute("d", pathInterpolator(n));
+        path.current.setAttribute("d", d);
       },
-      onComplete: onComplete
+      onComplete: slowAnimate
     });
   };
-  const slowAnimate = createAnimation(6000, easing.inOutQuad, () =>
-    slowAnimate()
-  );
-  const onSvgClick = createAnimation(2000, easing.outElastic, () =>
-    slowAnimate()
-  );
+  const slowAnimate = createAnimation(6000, easing.inOutQuad);
+  const onSvgClick = createAnimation(2000, easing.outElastic);
   useEffect(slowAnimate);
   return (
     <div className="App">
